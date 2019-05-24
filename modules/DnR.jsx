@@ -1,5 +1,6 @@
 import React from "react"
-import ReactDOM from "react-dom"
+
+import PropTypes from 'prop-types'
 
 export const disableSelect = {
   userSelect: 'none',
@@ -56,6 +57,10 @@ export default class DnR extends React.Component {
       transition: prefixedTransition(transition ? transition : theme.transition)
     };
 
+    this.frameRef = React.createRef();
+    this.titleRef = React.createRef();
+    this.contentRef = React.createRef();
+
     this.mouseMoveListener = this._onMove.bind(this)
     this.mouseUpListener = this._onUp.bind(this)
   }
@@ -71,8 +76,8 @@ export default class DnR extends React.Component {
     const boundingBox = this.getFrameRect()
     this.frameRect.width = initialWidth || boundingBox.width
     this.frameRect.height = initialHeight || boundingBox.height
-    this.frameRect.top = initialTop || this.refs.frame.offsetTop
-    this.frameRect.left = initialLeft || this.refs.frame.offsetLeft
+    this.frameRect.top = initialTop || this.frameRef.current.offsetTop
+    this.frameRect.left = initialLeft || this.frameRef.current.offsetLeft
 
     attachedTo.addEventListener('mousemove', this.mouseMoveListener)
     attachedTo.addEventListener('mouseup', this.mouseUpListener)
@@ -89,8 +94,8 @@ export default class DnR extends React.Component {
   transform(state, allowTransition = true, updateHistory = true) {
     const boundingBox = this.getFrameRect()
 
-    let top = this.refs.frame.offsetTop
-    let left = this.refs.frame.offsetLeft
+    let top = this.frameRef.current.offsetTop
+    let left = this.frameRef.current.offsetLeft
     let width = boundingBox.width
     let height = boundingBox.height
 
@@ -217,7 +222,7 @@ export default class DnR extends React.Component {
     }
 
 
-    const dnrState = {
+    const dnrstate = {
       cursor,
       clicked: this.clicked,
       frameRect: this.frameRect,
@@ -225,18 +230,18 @@ export default class DnR extends React.Component {
     }
 
     let titleBar = (
-        <div ref="title"
+        <div ref={this.titleRef}
           style={{
             ...theme.title,
             ...titleStyle,
             cursor
           }}>
           {typeof this.props.titleBar !== 'string' ?
-            React.cloneElement(this.props.titleBar, {dnrState}) : this.props.titleBar}
+            React.cloneElement(this.props.titleBar, {dnrstate}) : this.props.titleBar}
         </div>)
 
     const childrenWithProps = React.Children.map(children, function(child) {
-        return typeof child === 'string' ? child : React.cloneElement(child, {dnrState})
+        return typeof child === 'string' ? child : React.cloneElement(child, {dnrstate})
     })
 
     let frameTransition = (animate && this.allowTransition) ? this.state.transition : {}
@@ -251,7 +256,7 @@ export default class DnR extends React.Component {
       setTimeout(onResize.bind(this,this.frameRect, pervFrameRect))
     }
     return (
-      <div ref="frame"
+      <div ref={this.frameRef}
         onMouseDownCapture={this._onDown.bind(this)}
         onMouseMoveCapture={(e)=>{
           if (this.clicked !== null) {
@@ -267,7 +272,7 @@ export default class DnR extends React.Component {
           ...(this.clicked ? disableSelect : {})
         }}>
         {titleBar}
-        <div ref='content'
+        <div ref={this.contentRef}
           className='contentClassName'
           style={{position: 'absolute', width: '100%', top: theme.title.height, bottom: 0, ...contentStyle}}>
           {childrenWithProps}
@@ -276,13 +281,13 @@ export default class DnR extends React.Component {
     )
   }
   getFrameRect() {
-    return this.refs.frame.getBoundingClientRect()
+    return this.frameRef.current.getBoundingClientRect()
   }
   getDOMFrame() {
-    return this.refs.frame
+    return this.frameRef.current
   }
   getTitleRect() {
-    return this.refs.title.getBoundingClientRect()
+    return this.titleRef.current.getBoundingClientRect()
   }
   _cursorStatus(e){
     const boundingBox = this.getFrameRect()
@@ -336,7 +341,7 @@ export default class DnR extends React.Component {
     this._cursorStatus(e)
     const boundingBox = this.getFrameRect()
     this.clicked = {x: e.clientX, y: e.clientY, boundingBox: boundingBox,
-                    frameTop: this.refs.frame.offsetTop, frameLeft: this.refs.frame.offsetLeft}
+                    frameTop: this.frameRef.current.offsetTop, frameLeft: this.frameRef.current.offsetLeft}
   }
   _onUp(e){
     this.clicked = null
@@ -351,30 +356,30 @@ export default class DnR extends React.Component {
 }
 
 DnR.propTypes = {
-  titleBar: React.PropTypes.oneOfType([
-    React.PropTypes.object,
-    React.PropTypes.string,
+  titleBar: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.string,
   ]),
-  style: React.PropTypes.object,
-  contentClassName: React.PropTypes.object,
-  contentStyle: React.PropTypes.object,
-  titleStyle: React.PropTypes.object,
-  theme: React.PropTypes.object,
-  minWidth: React.PropTypes.number,
-  minHeight: React.PropTypes.number,
-  edgeDetectionRange: React.PropTypes.number,
-  initialWidth: React.PropTypes.number,
-  initialHeight: React.PropTypes.number,
-  initialTop: React.PropTypes.number,
-  initialLeft: React.PropTypes.number,
-  transition: React.PropTypes.string,
-  animate: React.PropTypes.bool,
-  onMove: React.PropTypes.func,
-  onResize: React.PropTypes.func,
-  onTransform: React.PropTypes.func,
-  cursorRemap: React.PropTypes.func,
-  boundary: React.PropTypes.object,
-  attachedTo: React.PropTypes.object,
+  style: PropTypes.object,
+  contentClassName: PropTypes.object,
+  contentStyle: PropTypes.object,
+  titleStyle: PropTypes.object,
+  theme: PropTypes.object,
+  minWidth: PropTypes.number,
+  minHeight: PropTypes.number,
+  edgeDetectionRange: PropTypes.number,
+  initialWidth: PropTypes.number,
+  initialHeight: PropTypes.number,
+  initialTop: PropTypes.number,
+  initialLeft: PropTypes.number,
+  transition: PropTypes.string,
+  animate: PropTypes.bool,
+  onMove: PropTypes.func,
+  onResize: PropTypes.func,
+  onTransform: PropTypes.func,
+  cursorRemap: PropTypes.func,
+  boundary: PropTypes.object,
+  attachedTo: PropTypes.object,
 }
 
 DnR.defaultProps = {

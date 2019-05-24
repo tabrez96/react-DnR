@@ -1,3 +1,2 @@
-export default from './DnR'
-
-export themes from './themes'
+export default from './DnR.jsx';
+export { OSXTheme, WindowsTheme } from './themes.jsx';

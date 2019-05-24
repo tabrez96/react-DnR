@@ -13,7 +13,7 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _DnR = require('./DnR');
+var _DnR = require('./DnR.jsx');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -93,7 +93,7 @@ var TitleBar = exports.TitleBar = function TitleBar(_ref) {
 	    button1Children = _ref.button1Children,
 	    button2Children = _ref.button2Children,
 	    button3Children = _ref.button3Children,
-	    dnrState = _ref.dnrState;
+	    dnrstate = _ref.dnrstate;
 	return _react2.default.createElement(
 		'div',
 		null,
@@ -102,17 +102,17 @@ var TitleBar = exports.TitleBar = function TitleBar(_ref) {
 			buttons,
 			_react2.default.createElement(
 				Button,
-				_extends({}, button1, { cursor: dnrState.cursor }),
+				_extends({}, button1, { cursor: dnrstate.cursor }),
 				button1Children
 			),
 			_react2.default.createElement(
 				Button,
-				_extends({}, button2, { cursor: dnrState.cursor }),
+				_extends({}, button2, { cursor: dnrstate.cursor }),
 				button2Children
 			),
 			_react2.default.createElement(
 				Button,
-				_extends({}, button3, { cursor: dnrState.cursor }),
+				_extends({}, button3, { cursor: dnrstate.cursor }),
 				button3Children
 			)
 		),

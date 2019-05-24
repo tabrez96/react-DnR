@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -9,13 +9,13 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = require("react-dom");
+var _propTypes = require('prop-types');
 
-var _reactDom2 = _interopRequireDefault(_reactDom);
+var _propTypes2 = _interopRequireDefault(_propTypes);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -85,13 +85,17 @@ var DnR = function (_React$Component) {
       transition: prefixedTransition(transition ? transition : theme.transition)
     };
 
+    _this.frameRef = _react2.default.createRef();
+    _this.titleRef = _react2.default.createRef();
+    _this.contentRef = _react2.default.createRef();
+
     _this.mouseMoveListener = _this._onMove.bind(_this);
     _this.mouseUpListener = _this._onUp.bind(_this);
     return _this;
   }
 
   _createClass(DnR, [{
-    key: "componentDidMount",
+    key: 'componentDidMount',
     value: function componentDidMount() {
       var _props = this.props,
           initialWidth = _props.initialWidth,
@@ -104,35 +108,35 @@ var DnR = function (_React$Component) {
       var boundingBox = this.getFrameRect();
       this.frameRect.width = initialWidth || boundingBox.width;
       this.frameRect.height = initialHeight || boundingBox.height;
-      this.frameRect.top = initialTop || this.refs.frame.offsetTop;
-      this.frameRect.left = initialLeft || this.refs.frame.offsetLeft;
+      this.frameRect.top = initialTop || this.frameRef.current.offsetTop;
+      this.frameRect.left = initialLeft || this.frameRef.current.offsetLeft;
 
       attachedTo.addEventListener('mousemove', this.mouseMoveListener);
       attachedTo.addEventListener('mouseup', this.mouseUpListener);
     }
   }, {
-    key: "componentWillReceiveProps",
+    key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
       if (nextProps.transition !== this.props.transition) {
         this.setState({ transition: prefixedTransition(nextProps.transition) });
       }
     }
   }, {
-    key: "componentWillUnmount",
+    key: 'componentWillUnmount',
     value: function componentWillUnmount() {
       this.props.attachedTo.removeEventListener('mousemove', this.mouseMoveListener);
       this.props.attachedTo.removeEventListener('mouseup', this.mouseUpListener);
     }
   }, {
-    key: "transform",
+    key: 'transform',
     value: function transform(state) {
       var allowTransition = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
       var updateHistory = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
       var boundingBox = this.getFrameRect();
 
-      var top = this.refs.frame.offsetTop;
-      var left = this.refs.frame.offsetLeft;
+      var top = this.frameRef.current.offsetTop;
+      var left = this.frameRef.current.offsetLeft;
       var width = boundingBox.width;
       var height = boundingBox.height;
 
@@ -159,28 +163,28 @@ var DnR = function (_React$Component) {
       this.forceUpdate();
     }
   }, {
-    key: "restore",
+    key: 'restore',
     value: function restore() {
       var allowTransition = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
       this.transform(this.prevState, allowTransition);
     }
   }, {
-    key: "minimize",
+    key: 'minimize',
     value: function minimize() {
       var allowTransition = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
       this.transform({ width: 0, height: 0 }, allowTransition);
     }
   }, {
-    key: "maximize",
+    key: 'maximize',
     value: function maximize() {
       var allowTransition = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
       this.transform({ top: 0, left: 0, width: this.props.attachedTo.innerWidth, height: this.props.attachedTo.innerHeight }, allowTransition);
     }
   }, {
-    key: "render",
+    key: 'render',
     value: function render() {
       var _this2 = this;
 
@@ -267,7 +271,7 @@ var DnR = function (_React$Component) {
         if (res && typeof res === 'string') cursor = res;
       }
 
-      var dnrState = {
+      var dnrstate = {
         cursor: cursor,
         clicked: this.clicked,
         frameRect: this.frameRect,
@@ -275,16 +279,16 @@ var DnR = function (_React$Component) {
       };
 
       var titleBar = _react2.default.createElement(
-        "div",
-        { ref: "title",
+        'div',
+        { ref: this.titleRef,
           style: _extends({}, theme.title, titleStyle, {
             cursor: cursor
           }) },
-        typeof this.props.titleBar !== 'string' ? _react2.default.cloneElement(this.props.titleBar, { dnrState: dnrState }) : this.props.titleBar
+        typeof this.props.titleBar !== 'string' ? _react2.default.cloneElement(this.props.titleBar, { dnrstate: dnrstate }) : this.props.titleBar
       );
 
       var childrenWithProps = _react2.default.Children.map(children, function (child) {
-        return typeof child === 'string' ? child : _react2.default.cloneElement(child, { dnrState: dnrState });
+        return typeof child === 'string' ? child : _react2.default.cloneElement(child, { dnrstate: dnrstate });
       });
 
       var frameTransition = animate && this.allowTransition ? this.state.transition : {};
@@ -297,8 +301,8 @@ var DnR = function (_React$Component) {
         setTimeout(onResize.bind(this, this.frameRect, pervFrameRect));
       }
       return _react2.default.createElement(
-        "div",
-        { ref: "frame",
+        'div',
+        { ref: this.frameRef,
           onMouseDownCapture: this._onDown.bind(this),
           onMouseMoveCapture: function onMouseMoveCapture(e) {
             if (_this2.clicked !== null) {
@@ -310,31 +314,31 @@ var DnR = function (_React$Component) {
           }, style, this.frameRect, this.clicked ? disableSelect : {}) },
         titleBar,
         _react2.default.createElement(
-          "div",
-          { ref: "content",
-            className: "contentClassName",
+          'div',
+          { ref: this.contentRef,
+            className: 'contentClassName',
             style: _extends({ position: 'absolute', width: '100%', top: theme.title.height, bottom: 0 }, contentStyle) },
           childrenWithProps
         )
       );
     }
   }, {
-    key: "getFrameRect",
+    key: 'getFrameRect',
     value: function getFrameRect() {
-      return this.refs.frame.getBoundingClientRect();
+      return this.frameRef.current.getBoundingClientRect();
     }
   }, {
-    key: "getDOMFrame",
+    key: 'getDOMFrame',
     value: function getDOMFrame() {
-      return this.refs.frame;
+      return this.frameRef.current;
     }
   }, {
-    key: "getTitleRect",
+    key: 'getTitleRect',
     value: function getTitleRect() {
-      return this.refs.title.getBoundingClientRect();
+      return this.titleRef.current.getBoundingClientRect();
     }
   }, {
-    key: "_cursorStatus",
+    key: '_cursorStatus',
     value: function _cursorStatus(e) {
       var boundingBox = this.getFrameRect();
       this.cursorX = e.clientX;
@@ -380,22 +384,22 @@ var DnR = function (_React$Component) {
       }
     }
   }, {
-    key: "_onDown",
+    key: '_onDown',
     value: function _onDown(e) {
       this.allowTransition = false;
       this._cursorStatus(e);
       var boundingBox = this.getFrameRect();
       this.clicked = { x: e.clientX, y: e.clientY, boundingBox: boundingBox,
-        frameTop: this.refs.frame.offsetTop, frameLeft: this.refs.frame.offsetLeft };
+        frameTop: this.frameRef.current.offsetTop, frameLeft: this.frameRef.current.offsetLeft };
     }
   }, {
-    key: "_onUp",
+    key: '_onUp',
     value: function _onUp(e) {
       this.clicked = null;
       this._cursorStatus(e);
     }
   }, {
-    key: "_onMove",
+    key: '_onMove',
     value: function _onMove(e) {
       this._cursorStatus(e);
       if (this.clicked !== null) {
@@ -411,27 +415,27 @@ exports.default = DnR;
 
 
 DnR.propTypes = {
-  titleBar: _react2.default.PropTypes.oneOfType([_react2.default.PropTypes.object, _react2.default.PropTypes.string]),
-  style: _react2.default.PropTypes.object,
-  contentClassName: _react2.default.PropTypes.object,
-  contentStyle: _react2.default.PropTypes.object,
-  titleStyle: _react2.default.PropTypes.object,
-  theme: _react2.default.PropTypes.object,
-  minWidth: _react2.default.PropTypes.number,
-  minHeight: _react2.default.PropTypes.number,
-  edgeDetectionRange: _react2.default.PropTypes.number,
-  initialWidth: _react2.default.PropTypes.number,
-  initialHeight: _react2.default.PropTypes.number,
-  initialTop: _react2.default.PropTypes.number,
-  initialLeft: _react2.default.PropTypes.number,
-  transition: _react2.default.PropTypes.string,
-  animate: _react2.default.PropTypes.bool,
-  onMove: _react2.default.PropTypes.func,
-  onResize: _react2.default.PropTypes.func,
-  onTransform: _react2.default.PropTypes.func,
-  cursorRemap: _react2.default.PropTypes.func,
-  boundary: _react2.default.PropTypes.object,
-  attachedTo: _react2.default.PropTypes.object
+  titleBar: _propTypes2.default.oneOfType([_propTypes2.default.object, _propTypes2.default.string]),
+  style: _propTypes2.default.object,
+  contentClassName: _propTypes2.default.object,
+  contentStyle: _propTypes2.default.object,
+  titleStyle: _propTypes2.default.object,
+  theme: _propTypes2.default.object,
+  minWidth: _propTypes2.default.number,
+  minHeight: _propTypes2.default.number,
+  edgeDetectionRange: _propTypes2.default.number,
+  initialWidth: _propTypes2.default.number,
+  initialHeight: _propTypes2.default.number,
+  initialTop: _propTypes2.default.number,
+  initialLeft: _propTypes2.default.number,
+  transition: _propTypes2.default.string,
+  animate: _propTypes2.default.bool,
+  onMove: _propTypes2.default.func,
+  onResize: _propTypes2.default.func,
+  onTransform: _propTypes2.default.func,
+  cursorRemap: _propTypes2.default.func,
+  boundary: _propTypes2.default.object,
+  attachedTo: _propTypes2.default.object
 };
 
 DnR.defaultProps = {

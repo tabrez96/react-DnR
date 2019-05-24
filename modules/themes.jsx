@@ -1,5 +1,5 @@
 import React from "react"
-import {defaultTheme} from './DnR'
+import {defaultTheme} from './DnR.jsx';
 
 export class Button extends React.Component {
   constructor(props) {
@@ -51,17 +51,17 @@ export const TitleBar = ({
 	button1Children,
 	button2Children,
 	button3Children,
-  dnrState
+  dnrstate
 }) =>
 	<div>
 		<div {...buttons}>
-			<Button {...button1} cursor={dnrState.cursor}>
+			<Button {...button1} cursor={dnrstate.cursor}>
 				{button1Children}
 			</Button>
-			<Button {...button2} cursor={dnrState.cursor}>
+			<Button {...button2} cursor={dnrstate.cursor}>
 				{button2Children}
 			</Button>
-			<Button {...button3} cursor={dnrState.cursor}>
+			<Button {...button3} cursor={dnrstate.cursor}>
 				{button3Children}
 			</Button>
 		</div>
